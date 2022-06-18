@@ -10,23 +10,16 @@ import UIKit
 import LocalAuthentication
 
 
-// Set username and password
-let username = "john"
-let password = "1234".data(using: .utf8)!
-
-// Set attributes
-let attributes: [String: Any] = [
-    kSecClass as String: kSecClassGenericPassword,
-    kSecAttrAccount as String: username,
-    kSecValueData as String: password,
-]
 
 struct ContentView: View {
     /*
      This copy was copy and pasted fom HackingWithSwift - Much Thanks
      https://www.hackingwithswift.com/books/ios-swiftui/using-touch-id-and-face-id-with-swiftui
      */
+
     @State private var isUnlocked = false
+    @State var qoutesObject: QoutesModel?
+
     func authenticate() {
         let context = LAContext()
         var error: NSError?
@@ -34,7 +27,7 @@ struct ContentView: View {
         // check whether biometric authentication is possible
         if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
             // it's possible, so go ahead and use it
-            let reason = "We need to unlock your data."
+            let reason = "FaceID Required to Access"
 
             context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, authenticationError in
                 // authentication has now completed
@@ -50,26 +43,30 @@ struct ContentView: View {
     }
 
     var body: some View {
-        VStack {
-            if isUnlocked {
-                MainView()
-            } else {
+        if isUnlocked {
+            MainView()
+        } else {
+            VStack(alignment: .leading) {
+                Text("\"\(qoutesObject?.content ?? "")\"")
+                Text("- \(qoutesObject?.author ?? "")")
+
                 Button(action: {
                     authenticate()
                 }) {
-                    Image(systemName: "faceid")
-                        .resizable()
-                        .frame(width: 50, height: 50)
-                        .foregroundColor(.blue)
+                    Text("Sign In")
                 }
-                Text("Authenticating With Apple ID...")
-                Spacer()
+                    .buttonStyle(.bordered)
+            }
+                .padding()
+                .onAppear() {
+                CallQoutesAPI().getAPI { (data) in
+                    self.qoutesObject = data
+                }
             }
         }
-            .padding()
-            .onAppear(perform: authenticate)
     }
 }
+
 
 
 struct MainView: View {
@@ -129,66 +126,67 @@ struct MainView: View {
     }
 
     var body: some View {
-        Form {
-            Section(header: Text("Generate Password")) {
-                VStack(alignment: .center) {
-                    if !hidePasswords {
-                        Text("\(generatedPassword)")
-
-                    } else {
-                        SecureField("Enter Password..", text: $generatedPassword)
-                            .disabled(true)
-                    }
-                }
-            }
-
-            Section(header: Text("Save to Clipboard")) {
-                Button(action: {
-                    copyToClipboard(input: generatedPassword)
-                    prevGeneratedPasswords()
-                }) {
-                    Text("Copy to Clipboard")
-                }
-            }
-
-            Section(header: Text("Hide Passwords")) {
-                Toggle(isOn: $hidePasswords) {
-                    Text("Hide All Passwords")
-                }
-            }
-            Section(header: Text("Password Length")) {
-                HStack {
-                    Slider(value: $passwordLength, in: 8...70)
-                        .onChange(of: passwordLength) { newValue in
-                        generatedPassword = passwordGenerator(length: Int(newValue))
-                    }
-
-
-                    Text("\(passwordLength, specifier: "%0.0f")")
-                }
-            }
-
-            Section(header: Text("Customise Password")) {
-                Toggle(isOn: $capitalLetters) {
-                    Text("Include Capital Letters")
-                }
-                Toggle(isOn: $specialCharaters) {
-                    Text("Include Special Characters")
-                }
-            }
-
-            Section(header: Text("Previously Generated Passwords")) {
-                ForEach(array, id: \.self) { each in
-                    HStack {
+        VStack {
+            Form {
+                Section(header: Text("Generate Password")) {
+                    VStack(alignment: .center) {
                         if !hidePasswords {
-                            Text(each)
+                            Text("\(generatedPassword)")
+
                         } else {
                             SecureField("Enter Password..", text: $generatedPassword)
                                 .disabled(true)
                         }
-                        Spacer()
-                        Button(action: { print(each) }) {
-                            Image(systemName: "doc.on.clipboard")
+                    }
+                }
+
+                Section(header: Text("Save to Clipboard")) {
+                    Button(action: {
+                        copyToClipboard(input: generatedPassword)
+                        prevGeneratedPasswords()
+                    }) {
+                        Text("Copy to Clipboard")
+                    }
+                }
+
+                Section(header: Text("Hide Passwords")) {
+                    Toggle(isOn: $hidePasswords) {
+                        Text("Hide All Passwords")
+                    }
+                }
+                Section(header: Text("Password Length")) {
+                    HStack {
+                        Slider(value: $passwordLength, in: 8...70)
+                            .onChange(of: passwordLength) { newValue in
+                            generatedPassword = passwordGenerator(length: Int(newValue))
+                        }
+
+
+                        Text("\(passwordLength, specifier: "%0.0f")")
+                    }
+                }
+
+                Section(header: Text("Customise Password")) {
+                    Toggle(isOn: $capitalLetters) {
+                        Text("Include Capital Letters")
+                    }
+                    Toggle(isOn: $specialCharaters) {
+                        Text("Include Special Characters")
+                    }
+                }
+
+                Section(header: Text("Previously Generated Passwords")) {
+                    ForEach(array, id: \.self) { each in
+                        HStack {
+                            if !hidePasswords {
+                                Text(each)
+                            } else {
+                                SecureField("Enter Password..", text: $generatedPassword)
+                                    .disabled(true)
+                            }
+                            Button(action: { print(each) }) {
+                                Image(systemName: "doc.on.clipboard")
+                            }
                         }
                     }
                 }
