@@ -1,5 +1,5 @@
 ## PassGen 
-<img width="180" alt="sc1" src="https://user-images.githubusercontent.com/64978825/174451397-04ab0cde-52e2-403f-b936-bd47961e7f20.png"> <img width="180">
+<img width="120" alt="sc1" src="https://user-images.githubusercontent.com/64978825/174451397-04ab0cde-52e2-403f-b936-bd47961e7f20.png"> <img width="120">
 
 A simple password generator app - 👷‍♂️ *a work in progress* 🛠
 
