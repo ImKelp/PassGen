@@ -9,18 +9,6 @@ import SwiftUI
 import UIKit
 import LocalAuthentication
 
-
-// Set username and password
-let username = "john"
-let password = "1234".data(using: .utf8)!
-
-// Set attributes
-let attributes: [String: Any] = [
-    kSecClass as String: kSecClassGenericPassword,
-    kSecAttrAccount as String: username,
-    kSecValueData as String: password,
-]
-
 struct ContentView: View {
     /*
      This copy was copy and pasted fom HackingWithSwift - Much Thanks
@@ -80,13 +68,6 @@ struct MainView: View {
     @State var specialCharaters = false
     @State var array: [String] = []
     @State var hidePasswords = false
-    @State var saveSheet = false
-
-
-    @State var website = ""
-    @State var username = ""
-
-
 
     func passwordGenerator(length: Int) -> String {
         let base = "abcdefghijklmnopqrstuvwxyz0123456789"
