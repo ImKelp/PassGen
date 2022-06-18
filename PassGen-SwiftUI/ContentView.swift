@@ -77,13 +77,6 @@ struct MainView: View {
     @State var specialCharaters = false
     @State var array: [String] = []
     @State var hidePasswords = false
-    @State var saveSheet = false
-
-
-    @State var website = ""
-    @State var username = ""
-
-
 
     func passwordGenerator(length: Int) -> String {
         let base = "abcdefghijklmnopqrstuvwxyz0123456789"
