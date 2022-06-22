@@ -13,7 +13,7 @@ import LocalAuthentication
 
 struct ContentView: View {
     /*
-     This copy was copy and pasted fom HackingWithSwift - Much Thanks
+     This was copied and pasted fom HackingWithSwift - Much Thanks
      https://www.hackingwithswift.com/books/ios-swiftui/using-touch-id-and-face-id-with-swiftui
      */
 
